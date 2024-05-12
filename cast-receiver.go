@@ -32,16 +32,19 @@ func getParamFromReq(req *http.Request, paramName string) string {
 
 func openFirefoxInKioskMode(w http.ResponseWriter, req *http.Request) {
 	urlToOpen := getParamFromReq(req, "url")
+    call("killall", "-9", "firefox")
 	call("firefox", "--kiosk", urlToOpen)
 }
 
 func openMpv(w http.ResponseWriter, req *http.Request) {
 	urlToOpen := getParamFromReq(req, "url")
+    call("killall", "-9", "mpv")
 	call("mpv", "-fs", "--ytdl-format=ytdl", "--ytdl-raw-options=cookies-from-browser=chromium", urlToOpen)
 }
 
 func openChromiumInKioskMode(w http.ResponseWriter, req *http.Request) {
 	urlToOpen := getParamFromReq(req, "url")
+    call("killall", "-9", "/usr/lib/chromium-browser/chromium-browser")
 	call("chromium-browser", "--kiosk", urlToOpen)
 }
 
