@@ -53,20 +53,30 @@ func getParamFromReq(req *http.Request, paramName string) string {
 
 func openFirefoxInKioskMode(w http.ResponseWriter, req *http.Request) {
 	urlToOpen := getParamFromReq(req, "url")
-	call("killall", "-9", "firefox")
+	cleanup()
 	callAsync("firefox", "--kiosk", urlToOpen)
 }
 
 func openMpv(w http.ResponseWriter, req *http.Request) {
 	urlToOpen := getParamFromReq(req, "url")
-	call("killall", "-9", "mpv")
+	cleanup()
 	callAsync("mpv", "-fs", "--ytdl-format=ytdl", "--ytdl-raw-options=cookies-from-browser=chromium", urlToOpen)
 }
 
 func openChromiumInKioskMode(w http.ResponseWriter, req *http.Request) {
 	urlToOpen := getParamFromReq(req, "url")
-	call("killall", "-9", "/usr/lib/chromium-browser/chromium-browser")
+	cleanup()
 	callAsync("chromium-browser", "--kiosk", urlToOpen)
+}
+
+func clearDesktop(w http.ResponseWriter, req *http.Request) {
+	cleanup()
+}
+
+func cleanup() {
+	call("killall", "-9", "firefox")
+	call("killall", "-9", "mpv")
+	call("pkill", "-9", "-f", "chromium")
 }
 
 func main() {
@@ -74,6 +84,7 @@ func main() {
 	http.HandleFunc("/firefox-kiosk", openFirefoxInKioskMode)
 	http.HandleFunc("/mpv", openMpv)
 	http.HandleFunc("/chromium-kiosk", openChromiumInKioskMode)
+	http.HandleFunc("/clearDesktop", clearDesktop)
 
 	http.ListenAndServe(":8090", nil)
 }
