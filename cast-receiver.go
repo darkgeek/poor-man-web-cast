@@ -3,20 +3,26 @@ package main
 import (
     "fmt"
     "net/http"
-    "os/exec"
+    "github.com/go-cmd/cmd"
 )
 
 func call(exe string, params ...string) {
-    cmd := exec.Command(exe, params...)
-    stdout, err := cmd.Output()
+    cmd := cmd.NewCmd(exe, params...)
+    statusChan := cmd.Start()
     
-    if err != nil {
-        fmt.Println(err.Error())
-        return
-    }
-
-    // Print the output
-    fmt.Println(string(stdout))
+    go func() {
+        <-time.After(10 * time.Second)
+        select {
+        case cmdStatus:= <- statusChan:
+            fmt.Println("exited after 10 secs")
+        default:
+            status := findCmd.Status()
+            fmt.Println("stderr after 10 secs:")
+            fmt.Println(status.Stderr)
+            fmt.Println("stdout after 10 secs:")
+            fmt.Println(status.Stdout)
+        }
+    }()
 }
 
 func getParamFromReq(req *http.Request, paramName string) string {
