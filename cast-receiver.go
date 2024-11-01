@@ -54,7 +54,7 @@ func getParamFromReq(req *http.Request, paramName string) string {
 func openFirefoxInKioskMode(w http.ResponseWriter, req *http.Request) {
 	urlToOpen := getParamFromReq(req, "url")
 	cleanup()
-	callAsync("firefox", "--kiosk", urlToOpen)
+	callAsync("firefox", urlToOpen)
 }
 
 func openMpv(w http.ResponseWriter, req *http.Request) {
@@ -66,7 +66,12 @@ func openMpv(w http.ResponseWriter, req *http.Request) {
 func openChromiumInKioskMode(w http.ResponseWriter, req *http.Request) {
 	urlToOpen := getParamFromReq(req, "url")
 	cleanup()
-	callAsync("chromium-browser", "--kiosk", urlToOpen)
+	callAsync("chromium-browser", urlToOpen)
+}
+
+func receiveTextToClipboard(w http.ResponseWriter, req *http.Request) {
+	text := getParamFromReq(req, "text")
+	callAsync("wl-copy", text)
 }
 
 func clearDesktop(w http.ResponseWriter, req *http.Request) {
@@ -85,6 +90,7 @@ func main() {
 	http.HandleFunc("/mpv", openMpv)
 	http.HandleFunc("/chromium-kiosk", openChromiumInKioskMode)
 	http.HandleFunc("/clearDesktop", clearDesktop)
+	http.HandleFunc("/receiveTextToClipboard", receiveTextToClipboard)
 
 	http.ListenAndServe(":8090", nil)
 }
