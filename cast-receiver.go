@@ -74,6 +74,10 @@ func receiveTextToClipboard(w http.ResponseWriter, req *http.Request) {
 	callAsync("wl-copy", text)
 }
 
+func killKodi(w http.ResponseWriter, req *http.Request) {
+    callAsync("killall", "-9", "kodi.bin")
+}
+
 func clearDesktop(w http.ResponseWriter, req *http.Request) {
 	cleanup()
 }
@@ -91,6 +95,7 @@ func main() {
 	http.HandleFunc("/chromium-kiosk", openChromiumInKioskMode)
 	http.HandleFunc("/clearDesktop", clearDesktop)
 	http.HandleFunc("/receiveTextToClipboard", receiveTextToClipboard)
+	http.HandleFunc("/killKodi", killKodi)
 
 	http.ListenAndServe(":8090", nil)
 }
